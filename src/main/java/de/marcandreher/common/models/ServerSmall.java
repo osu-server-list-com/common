@@ -1,4 +1,4 @@
-package de.marcandreher.common.enums;
+package de.marcandreher.common.models;
 
 import java.time.LocalDateTime;
 
@@ -6,7 +6,7 @@ import de.marcandreher.fusionkit.core.database.Column;
 import lombok.Data;
 
 @Data
-public class ServerLite {
+public class ServerSmall {
     @Column("id")
     private int id;
 
