@@ -28,7 +28,7 @@
    <dependency>
       <groupId>com.github.FusionKitJava</groupId>
       <artifactId>fusionkit</artifactId>
-      <version>1.1.8</version>
+      <version>1.1.9</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
@@ -36,4 +36,6 @@
       <version>1.9.22</version>
     </dependency>
   </dependencies>
+
+  
 </project>
