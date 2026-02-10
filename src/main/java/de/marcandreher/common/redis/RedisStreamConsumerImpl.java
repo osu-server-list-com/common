@@ -47,9 +47,6 @@ public class RedisStreamConsumerImpl implements RedisStreamConsumer, Runnable {
                 // First process pending messages (in case of crash recovery)
                 readMessages(StreamEntryID.XREADGROUP_UNDELIVERED_ENTRY);
 
-                // Then block for new messages
-                readMessages(StreamEntryID.XREADGROUP_UNDELIVERED_ENTRY);
-
             } catch (Exception e) {
                 System.err.println("Consumer loop error:");
                 e.printStackTrace();
@@ -94,9 +91,17 @@ public class RedisStreamConsumerImpl implements RedisStreamConsumer, Runnable {
 
     private void createGroupIfNotExists() {
         try {
+            // MKSTREAM flag = true creates stream if it doesn't exist
             jedis.xgroupCreate(streamName, groupName, new StreamEntryID("0"), true);
-        } catch (Exception ignored) {
-            // Group already exists
+            System.out.println("Created consumer group: " + groupName + " on stream: " + streamName);
+        } catch (Exception e) {
+            // Only ignore if group already exists, otherwise log the error
+            if (e.getMessage() != null && e.getMessage().contains("BUSYGROUP")) {
+                System.out.println("Consumer group already exists: " + groupName);
+            } else {
+                System.err.println("Failed to create consumer group: " + e.getMessage());
+                throw e;
+            }
         }
     }
 
