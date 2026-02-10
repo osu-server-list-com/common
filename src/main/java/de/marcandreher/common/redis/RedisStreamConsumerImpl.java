@@ -3,6 +3,10 @@ package de.marcandreher.common.redis;
 import java.util.List;
 import java.util.Map;
 
+import org.jline.utils.Log;
+import org.slf4j.Logger;
+
+import de.marcandreher.fusionkit.core.FusionKit;
 import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.StreamEntryID;
 import redis.clients.jedis.params.XReadGroupParams;
@@ -10,6 +14,7 @@ import redis.clients.jedis.resps.StreamEntry;
 
 public class RedisStreamConsumerImpl implements RedisStreamConsumer, Runnable {
 
+    private final Logger logger = FusionKit.getLogger(RedisStreamConsumer.class);
     private final RedisClient jedis;
     private final String streamName;
     private final String groupName;
@@ -48,8 +53,7 @@ public class RedisStreamConsumerImpl implements RedisStreamConsumer, Runnable {
                 readMessages(StreamEntryID.XREADGROUP_UNDELIVERED_ENTRY);
 
             } catch (Exception e) {
-                System.err.println("Consumer loop error:");
-                e.printStackTrace();
+                Log.error("Failed to read message from consumer", e);
 
                 try {
                     Thread.sleep(1000); // small backoff
@@ -83,23 +87,22 @@ public class RedisStreamConsumerImpl implements RedisStreamConsumer, Runnable {
             handler.handle(entry.getID().toString(), entry.getFields());
             jedis.xack(streamName, groupName, entry.getID());
         } catch (Exception e) {
-            System.err.println("Failed processing message: " + entry.getID());
-            e.printStackTrace();
-            // message remains pending → can be retried
+            logger.error("Failed processing message: " + entry.getID(), e);
         }
     }
 
     private void createGroupIfNotExists() {
         try {
             // MKSTREAM flag = true creates stream if it doesn't exist
-            jedis.xgroupCreate(streamName, groupName, new StreamEntryID("0"), true);
-            System.out.println("Created consumer group: " + groupName + " on stream: " + streamName);
+            // Use 0-0 to start from the beginning of the stream
+            jedis.xgroupCreate(streamName, groupName, new StreamEntryID(0L, 0L), true);
+            logger.info("Created consumer group: " + groupName + " on stream: " + streamName);
         } catch (Exception e) {
             // Only ignore if group already exists, otherwise log the error
             if (e.getMessage() != null && e.getMessage().contains("BUSYGROUP")) {
-                System.out.println("Consumer group already exists: " + groupName);
+                logger.info("Consumer group already exists: " + groupName);
             } else {
-                System.err.println("Failed to create consumer group: " + e.getMessage());
+                logger.error("Failed to create consumer group: " + e.getMessage(), e);
                 throw e;
             }
         }
