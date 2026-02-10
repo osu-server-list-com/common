@@ -31,7 +31,7 @@ public class Redis {
         return redisClient;
     }
 
-    public static String sendAndWait(String stream, Map<String, String> payload, Duration timeout, RedisClient client) {
+    public static Map<String, String> sendAndWait(String stream, Map<String, String> payload, Duration timeout, RedisClient client) {
         String correlationId = UUID.randomUUID().toString();
         String responseStream = "response:" + correlationId;
 
@@ -43,13 +43,13 @@ public class Redis {
         List<Map.Entry<String, List<StreamEntry>>> response =
             client.xread(
                     new XReadParams().count(1).block((int)timeout.toMillis()),
-                    Map.of(responseStream, StreamEntryID.XREADGROUP_UNDELIVERED_ENTRY)
+                    Map.of(responseStream, new StreamEntryID(0L, 0L))
             );
 
         if (response == null) {
             throw new RuntimeException("Timeout waiting for response");
         }
 
-        return response.get(0).getValue().get(0).getFields().get("result");
+        return response.get(0).getValue().get(0).getFields();
     }
 }
