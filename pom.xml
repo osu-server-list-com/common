@@ -1,41 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>de.marcandreher</groupId>
   <artifactId>common</artifactId>
-  <version>1.8</version>
+  <version>1.9</version>
 
   <name>common</name>
-  <url>http://www.example.com</url>
+  <url>https://osu-server-list.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
+
+    <jedis.version>7.2.1</jedis.version>
+    <fusionkit.version>1.1.9</fusionkit.version>
+    <kotlin.stdlib.version>1.9.22</kotlin.stdlib.version>
   </properties>
 
   <repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 
   <dependencies>
-   <dependency>
+    <dependency>
       <groupId>com.github.FusionKitJava</groupId>
       <artifactId>fusionkit</artifactId>
-      <version>1.1.9</version>
+      <version>${fusionkit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>${jedis.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>
-      <version>1.9.22</version>
+      <version>${kotlin.stdlib.version}</version>
     </dependency>
   </dependencies>
 
-  
+
 </project>
