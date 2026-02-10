@@ -40,16 +40,29 @@ public class Redis {
 
         client.xadd(stream, StreamEntryID.NEW_ENTRY, payload);
 
-        List<Map.Entry<String, List<StreamEntry>>> response =
-            client.xread(
-                    new XReadParams().count(1).block((int)timeout.toMillis()),
-                    Map.of(responseStream, new StreamEntryID(0L, 0L))
-            );
+        try {
+            List<Map.Entry<String, List<StreamEntry>>> response =
+                client.xread(
+                        new XReadParams().count(1).block((int)timeout.toMillis()),
+                        Map.of(responseStream, new StreamEntryID(0L, 0L))
+                );
 
-        if (response == null) {
-            throw new RuntimeException("Timeout waiting for response");
+            if (response == null) {
+                throw new RuntimeException("Timeout waiting for response");
+            }
+
+            return response.get(0).getValue().get(0).getFields();
+        } finally {
+            // Cleanup: delete the temporary response stream
+            try {
+                client.del(responseStream);
+            } catch (Exception e) {
+                logger.warn("Failed to cleanup response stream: {}", responseStream, e);
+            }
         }
+    }
 
-        return response.get(0).getValue().get(0).getFields();
+    public static void reply(String streamName, Map<String, String> data, RedisClient client) {
+        client.xadd(streamName, StreamEntryID.NEW_ENTRY, data);
     }
 }
