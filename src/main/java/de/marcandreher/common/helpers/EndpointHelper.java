@@ -9,11 +9,16 @@ import org.slf4j.Logger;
 import de.marcandreher.common.enums.APIType;
 import de.marcandreher.common.enums.EndpointType;
 import de.marcandreher.fusionkit.core.FusionKit;
-import de.marcandreher.fusionkit.core.database.Database;
+import de.marcandreher.fusionkit.core.database.MySQL;
 
 public class EndpointHelper {
     private final String ENDPOINT_SQL = "SELECT `name`, `dcbot` FROM `un_endpoints` LEFT JOIN `un_servers` ON `un_endpoints`.`srv_id` = `un_servers`.`id` WHERE `type` = ? AND `visible` = 1 % ORDER BY `votes` DESC";
     private final Logger logger = FusionKit.getLogger(EndpointHelper.class);
+    private final MySQL mysql;
+
+    public EndpointHelper(MySQL mysql) {
+        this.mysql = mysql;
+    }
 
     public String[] getBotSupportedServers(EndpointType type, APIType... endpoints) {
             ArrayList<String> serverList = new ArrayList<>();
@@ -32,7 +37,7 @@ public class EndpointHelper {
                 serverList.add("Bancho");
             }
 
-            try (var mysql = Database.getConnection()) {
+            try {
                 ResultSet endpointResult = mysql.query(ENDPOINT_SQL.replaceAll("%", endpointSql), type.name()).executeQuery();
                 while (endpointResult.next()) {
                     if (!endpointResult.getBoolean("dcbot"))
@@ -40,8 +45,8 @@ public class EndpointHelper {
                     serverList.add(endpointResult.getString("name"));
                 }
 
-
                 return serverList.toArray(new String[0]);
+                
             } catch (SQLException e) {
                 logger.error("Error fetching servers for endpoint " + type.name(), e);
             }
