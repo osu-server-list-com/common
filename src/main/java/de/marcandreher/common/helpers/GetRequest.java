@@ -28,7 +28,7 @@ public class GetRequest {
             return response.body().string();
         } catch (Exception e) {
             long elapsedTime = System.currentTimeMillis() - startTime;
-            logger.error("Error during GET request to {} after ({}ms)", url, elapsedTime, e);
+            logger.error("Error during GET request to {} after ({}ms) {}", url, elapsedTime, e.getLocalizedMessage());
             return null;
         }
     }
