@@ -1,6 +1,6 @@
 package de.marcandreher.common.models;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import de.marcandreher.fusionkit.core.database.Column;
 import lombok.Data;
@@ -14,7 +14,7 @@ public class Incident {
     private int serverId;
 
     @Column("timestamp")
-    private LocalDateTime timestamp;
+    private Timestamp timestamp;
 
     @Column("message")
     private String message;
