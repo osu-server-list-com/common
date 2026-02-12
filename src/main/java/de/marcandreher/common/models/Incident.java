@@ -16,6 +16,9 @@ public class Incident {
     @Column("timestamp")
     private Timestamp timestamp;
 
+    @Column("url")
+    private String url;
+
     @Column("message")
     private String message;
 
