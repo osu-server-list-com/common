@@ -24,7 +24,7 @@ public class Server {
     private int expired;
 
     @Column("ping")
-    private int ping;
+    private Integer ping;
 
     @Column("url")
     private String url;
