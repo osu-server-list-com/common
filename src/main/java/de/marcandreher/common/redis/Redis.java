@@ -17,8 +17,16 @@ import redis.clients.jedis.resps.StreamEntry;
 public class Redis {
 
     private final static Logger logger = FusionKit.getLogger(Redis.class);
+    private static RedisClient redisClient;
 
-    public static RedisClient connect(Dotenv dotenv) {
+    public static RedisClient getClient() {
+        if (redisClient == null) {
+            throw new IllegalStateException("Redis client not initialized. Call Redis.connect() first.");
+        }
+        return redisClient;
+    }
+
+    public static void connect(Dotenv dotenv) {
         RedisClient redisClient = RedisClient.builder().hostAndPort(dotenv.get("REDIS_HOST"), Integer.parseInt(dotenv.get("REDIS_PORT"))).build();
 
         String ping = redisClient.ping();
@@ -28,21 +36,21 @@ public class Redis {
         }
 
         logger.info("Connected to redis at: {}:{}", dotenv.get("REDIS_HOST"), Integer.parseInt(dotenv.get("REDIS_PORT")));
-        return redisClient;
+        Redis.redisClient = redisClient;
     }
 
-    public static Map<String, String> sendAndWait(String stream, Map<String, String> payload, Duration timeout, RedisClient client) {
+    public static Map<String, String> sendAndWait(String stream, Map<String, String> payload, Duration timeout) {
         String correlationId = UUID.randomUUID().toString();
         String responseStream = "response:" + correlationId;
 
         payload.put("correlationId", correlationId);
         payload.put("replyTo", responseStream);
 
-        client.xadd(stream, StreamEntryID.NEW_ENTRY, payload);
+        redisClient.xadd(stream, StreamEntryID.NEW_ENTRY, payload);
 
         try {
             List<Map.Entry<String, List<StreamEntry>>> response =
-                client.xread(
+                redisClient.xread(
                         new XReadParams().count(1).block((int)timeout.toMillis()),
                         Map.of(responseStream, new StreamEntryID(0L, 0L))
                 );
@@ -55,7 +63,7 @@ public class Redis {
         } finally {
             // Cleanup: delete the temporary response stream
             try {
-                client.del(responseStream);
+                redisClient.del(responseStream);
             } catch (Exception e) {
                 logger.warn("Failed to cleanup response stream: {}", responseStream, e);
             }
