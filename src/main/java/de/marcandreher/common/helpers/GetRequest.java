@@ -10,7 +10,7 @@ public class GetRequest {
     private static final Logger logger = FusionKit.getLogger(GetRequest.class);
     private static OkHttpClient client = new OkHttpClient();
 
-    public static String send(String url) {
+    public static GetRequestResponse send(String url) {
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(url)
                 .header("User-Agent", USER_AGENT)
@@ -25,11 +25,35 @@ public class GetRequest {
                 throw new Exception("Unexpected code " + response);
             }
             logger.debug("[GET] {} in ({}ms)", url, elapsedTime);
-            return response.body().string();
+            return new GetRequestResponse(response.body().string(), response.code(), elapsedTime);
         } catch (Exception e) {
             long elapsedTime = System.currentTimeMillis() - startTime;
             logger.error("Error during GET request to {} after ({}ms) {}", url, elapsedTime, e.getLocalizedMessage());
             return null;
+        }
+    }
+
+    public static class GetRequestResponse {
+        private String body;
+        private int statusCode;
+        private long elapsedTime;
+
+        public GetRequestResponse(String body, int statusCode, long elapsedTime) {
+            this.body = body;
+            this.statusCode = statusCode;
+            this.elapsedTime = elapsedTime;
+        }
+
+        public String getBody() {
+            return body;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public long getElapsedTime() {
+            return elapsedTime;
         }
     }
 }
