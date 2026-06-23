@@ -12,8 +12,8 @@ import de.marcandreher.fusionkit.core.FusionKit;
 import de.marcandreher.fusionkit.core.database.MySQL;
 
 public class EndpointHelper {
-    private final String ENDPOINT_SQL = "SELECT `name`, `dcbot` FROM `un_endpoints` LEFT JOIN `un_servers` ON `un_endpoints`.`srv_id` = `un_servers`.`id` WHERE `type` = ? AND `visible` = 1 % ORDER BY `votes` DESC";
-    private final Logger logger = FusionKit.getLogger(EndpointHelper.class);
+    private static final String ENDPOINT_SQL = "SELECT `name`, `dcbot` FROM `un_endpoints` LEFT JOIN `un_servers` ON `un_endpoints`.`srv_id` = `un_servers`.`id` WHERE `type` = ? AND `visible` = 1 % ORDER BY `votes` DESC";
+    private static final Logger logger = FusionKit.getLogger(EndpointHelper.class);
     private final MySQL mysql;
 
     public EndpointHelper(MySQL mysql) {

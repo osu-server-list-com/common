@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient;
 public class GetRequest {
     public static final String USER_AGENT = "osu!ListBot/3.0 (+https://osu-server-list.com/docs/crawler)";
     private static final Logger logger = FusionKit.getLogger(GetRequest.class);
-    private static OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
 
     public static GetRequestResponse send(String url) {
         okhttp3.Request request = new okhttp3.Request.Builder()

@@ -7,17 +7,17 @@
 
   <groupId>de.marcandreher</groupId>
   <artifactId>common</artifactId>
-  <version>2.7</version>
+  <version>3.1</version>
 
   <name>common</name>
   <url>https://osu-server-list.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.source>25</maven.compiler.source>
+    <maven.compiler.target>25</maven.compiler.target>
 
-    <fusionkit.version>2.1</fusionkit.version>
+    <fusionkit.version>3.1.2</fusionkit.version>
     <jedis.version>7.2.1</jedis.version>
     <kotlin.stdlib.version>1.9.22</kotlin.stdlib.version>
     <dotenv.version>5.2.2</dotenv.version>
