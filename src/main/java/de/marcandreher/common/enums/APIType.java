@@ -11,5 +11,6 @@ public enum APIType {
     RAGNAROKAPI,
     SUNRISE,
     G0V0LAZER,
+    MORASOOMAAPI,
     NONE
 }
